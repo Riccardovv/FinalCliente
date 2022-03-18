@@ -31,9 +31,16 @@ class StoreController{
      this.#storeView.bindShowStores(this.handleShowStores);
      this.#storeView.bindShowCategories(this.handleShowCategories);
      this.#storeView.bindShowProducts(this.handleShowProduts);
+
      this.#storeView.bindAddProduct(this.handleAddProduct)
      this.#storeView.bindAddCategory(this.handleAddCategory)
      this.#storeView.bindAddStore(this.handleAddStore)
+
+     this.#storeView.bindDeleteStore(this.handleDeleteStore)
+     this.#storeView.bindDeleteCategory(this.handleDeleteCategory)
+     this.#storeView.bindDeleteProduct(this.handleDeleteProduct)
+
+     this.#storeView.bindLogin(this.handleLogin)
   }
 
    //Campos privados
@@ -76,7 +83,7 @@ class StoreController{
   
  
    onInit = () => {
-     this.#storeView.init();
+     this.#storeView.init(this.#validate.validateLogin, this.handleInit);
    }
  
    handleInit = () => {
@@ -100,6 +107,19 @@ class StoreController{
     this.#storeView.addStore(this.#validate.validateStore ,this.addStore);
   }
 
+  handleDeleteStore = ()  =>{
+    this.#storeView.deleteStore(this.#storeModel.shops ,this.deleteStore);
+  }
+
+
+  handleDeleteCategory = ()  =>{
+    this.#storeView.deleteCategory(this.#storeModel.categories ,this.deleteCategory);
+  }
+
+
+  handleDeleteProduct = ()  =>{
+    this.#storeView.deleteProduct(this.#storeModel.products ,this.deleteProduct);
+  }
 
 
    handleShowStores = () =>{
@@ -129,7 +149,10 @@ class StoreController{
      this.#storeView.bindOpenWindow(this.#storeView.showProductInWindow,this.#storeModel.getProductByName(e.target.dataset.name))
    }
 
-
+   handleLogin = (event) =>{
+     console.log('handle');
+    this.#storeView.login(this.#validate.validateLogin);
+   }
 
 
 
@@ -148,6 +171,27 @@ class StoreController{
     form=form[0];
     this.#storeModel.addShop(new Store( form.nsCif.value, form.nsName.value, form.nsAdress.value, form.nsPhone.value, new Coords((Math.random() * (185 - (-85)) + (-85)),(Math.random() * (185 - (-85)) + (-85)))))
    }
+
+
+   deleteStore = (cif) =>{
+
+    
+     this.#storeModel.removeStore(this.#storeModel.getShopByCif(cif))
+   }
+
+   deleteCategory = (title) =>{
+
+    console.log(title);
+     this.#storeModel.removeCategory(this.#storeModel.getCategoryByTitle(title))
+   }
+
+   deleteProduct = (name) =>{
+
+    this.#storeModel.removeProduct(this.#storeModel.getProductByName(name))
+   }
+
+
+   
  
 }
   export default StoreController;

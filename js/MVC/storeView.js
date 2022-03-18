@@ -35,9 +35,10 @@ class StoreView{
 
 
   
-  init(){
+  init(validator, init){
     this.content.empty();
     $('#carouselExampleIndicators').show();
+    this.login(validator, init);
     console.log('init');
   }
 
@@ -73,7 +74,7 @@ class StoreView{
   }
 
   bindShowStoreProducts(handler){
-    $('.btn').click((event) => {
+    $('.btn-primary').click((event) => {
       console.log('ver pord');
       this.#excecuteHandler(
       handler, [event], 'body',{action: 'ShowStoreProducts'}, 'Productos', event
@@ -83,7 +84,7 @@ class StoreView{
 
 
   bindOpenWindow(handler,product,ventanas){
-    $('.btn').click((event) => {
+    $('.btn-primary').click((event) => {
       this.#excecuteHandler(
       handler, [event,product,ventanas], 'body',
       {action: 'bindShowStoreProducts'}, event.target.name, event
@@ -123,6 +124,7 @@ class StoreView{
                 <h5 class="card-title">`+p.name+`</h5>
                 <p class="card-text">`+p.description+`</p>
                 <a href="#" class="btn btn-primary" data-name="${p.name}">Open New Window</a>
+                <a href="#" class="btn btn-warning" data-name="${p.name} id">Mark As Favorite</a>
                 </div>
                 </div>`
         );
@@ -391,6 +393,43 @@ $('#content').append('<div class="text-success"><i class="bi bi-check-lg"></i> t
 }
 
 
+deleteStore(stores,deleteFunc){
+  this.content.empty()
+  $('#carouselExampleIndicators').hide();
+
+  this.content.append(`
+  <form name="deleteS" role="form" id="deleteS" novalidate class="container">
+
+  <div class="col-md-6 mb-3">
+      <label for="dStore">Store</label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="modelPrepend"><i class="bi bi-list"></i></span>
+        </div>
+        <select id=dStore name=dStore>
+
+        <div id="descriptionFeedback"></div>
+
+        </div>
+        </div>
+      </div>
+
+  </form>
+  `);
+  
+  for (const s of stores.values()) {
+    $('#dStore').append(`<option value="${s.CIF}">CIF: ${s.CIF}  Name:${s.name}</option>`)
+  }
+  $('#dStore').parent().append('<button class="btn btn-danger m-1 w-25" type="" id="delete" name="delete" >Borrar</button>')
+
+  $('#delete').click(function (e) {
+    e.preventDefault();
+    deleteFunc($('dStore').val());
+    $('#deleteS').html('')
+    $('#content').append('<div class="text-success"><i class="bi bi-check-lg"></i> tienda Borrada Correctamente</div>')
+  })
+
+}
 
 
 
@@ -398,11 +437,129 @@ $('#content').append('<div class="text-success"><i class="bi bi-check-lg"></i> t
 
 
 
+deleteCategory(categories,deleteFunc){
+  this.content.empty()
+  $('#carouselExampleIndicators').hide();
+
+  this.content.append(`
+  <form name="deleteC" role="form" id="deleteC" novalidate class="container">
+
+  <div class="col-md-6 mb-3">
+      <label for="dCategory">Category</label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="modelPrepend"><i class="bi bi-list"></i></span>
+        </div>
+        <select id=dCategory name=dCategory>
+        </select>
+        <div id="descriptionFeedback"></div>
+
+        </div>
+        </div>
+      </div>
+
+  </form>
+  `);
+  
+  for (const c of categories) {
+    $('#dCategory').append(`<option value="${c.title}">Titulo: ${c.title}</option>`)
+  }
+  $('#dCategory').parent().append('<button class="btn btn-danger m-1 w-25" type="" id="delete" name="delete" >Borrar</button>')
+
+  $('#delete').click(function (e) {
+    e.preventDefault();
+    deleteFunc(document.getElementById('dCategory').value);
+    $('#deleteC').html('')
+    $('#content').append('<div class="text-success"><i class="bi bi-check-lg"></i> Categoria Borrada Correctamente</div>')
+  })
+
+}
 
 
 
 
 
+deleteProduct(products,deleteFunc){
+  this.content.empty()
+  $('#carouselExampleIndicators').hide();
+
+  this.content.append(`
+  <form name="deleteP" role="form" id="deleteP" novalidate class="container">
+
+  <div class="col-md-6 mb-3">
+      <label for="dProduct">Category</label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="modelPrepend"><i class="bi bi-list"></i></span>
+        </div>
+        <select id=dProduct name=dProduct>
+        </select>
+        <div id="descriptionFeedback"></div>
+
+        </div>
+        </div>
+      </div>
+
+  </form>
+  `);
+  
+  for (const p of products) {
+    $('#dProduct').append(`<option value="${p.name}">Nombre Producto: ${p.name}</option>`)
+  }
+  $('#dProduct').parent().append('<button class="btn btn-danger m-1 w-25" type="" id="delete" name="delete" >Borrar</button>')
+
+  $('#delete').click(function (e) {
+    e.preventDefault();
+    deleteFunc(document.getElementById('dProduct').value);
+    $('#deleteP').html('')
+    $('#content').append('<div class="text-success"><i class="bi bi-check-lg"></i> Producto Borrada Correctamente</div>')
+  })
+
+}
+
+
+
+  login(validateFunc, inicio){
+    if (localStorage.getItem('user') == 'admin') {
+      $('#login').attr('data-user','admin')
+      $('#login').html('Hola Admin')
+    }else{
+      if ($('#login').attr('data-user') != 'admin') {
+        this.content.empty()
+        $('#carouselExampleIndicators').hide();
+  
+        this.content.append(`
+        <form class="form-inline" name="loginForm" id="loginForm">
+          <label class="sr-only" for="inlineforminput">Username</label>
+          <div class="input-group mb-2 me-sm-2 mb-sm-0">
+              <div class="input-group"></div>
+              <input type="text" class="form-control" id="user" placeholder="Username">
+          </div>
+          <label class="sr-only" for="inlineform">Password</label>
+          <input type="password" class="form-control mb-2 me-sm-2 mb-sm-0" id="pass" placeholder="Enter Password">
+          <div class="form-check mb-2 me-sm-2 mb-sm-0">
+              
+          </div>
+          <button type="submit" class="btn btn-info" id="validarUser">Login</button>
+      </form>
+        `)
+    }
+
+    }
+    if ($('#loginForm')) {
+      $('#validarUser').on('click', function(e){
+        e.preventDefault();
+        console.log($('#user').val());
+        if (validateFunc($('#user').val(),$('#pass').val() )) {
+          $('#login').attr('data-user','admin')
+          inicio();
+          localStorage.setItem('user', 'admin')
+          
+        }
+      })
+    }
+
+  }
 
 
 
@@ -414,6 +571,11 @@ $('#content').append('<div class="text-success"><i class="bi bi-check-lg"></i> t
     })
   }
 
+
+  bindLogin(handler){
+    
+    $('#login').click(handler);
+  }
 
 
   bindAddProduct(handler){
@@ -430,6 +592,23 @@ $('#content').append('<div class="text-success"><i class="bi bi-check-lg"></i> t
     
     $('#addStore').click(handler);
   }
+
+
+
+  bindDeleteStore(handler){
+    
+    $('#deleteStore').click(handler);
+  }
+  bindDeleteCategory(handler){
+    
+    $('#deleteCategory').click(handler);
+  }
+  bindDeleteProduct(handler){
+    
+    $('#deleteProduct').click(handler);
+  }
+
+
 
 
   bindCloseWindows(handler,ventanas){
@@ -463,7 +642,7 @@ $('#content').append('<div class="text-success"><i class="bi bi-check-lg"></i> t
 
 
   bindShowCategoryProducts(handler){
-    $('.btn').click((event) => {
+    $('.btn-primary').click((event) => {
       console.log('ver pord cat');
       this.#excecuteHandler(
       handler, [event], 'body',

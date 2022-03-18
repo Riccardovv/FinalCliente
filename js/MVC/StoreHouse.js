@@ -80,7 +80,7 @@ class StoreHouse {
   }
 
 //añade un producto a una tienda con su cantidad
-  addProductInShop(product, shop, cuantity,){
+  addProductInShop(product, shop, cuantity){
     if(! product instanceof Product) throw new InvalidValue("product", product)
     if(shop.products.has(product)) throw new ProductAlreadyAdded(product);
 
@@ -173,11 +173,15 @@ class StoreHouse {
 
   getProductByName(name){
     let tmp;
-    for (const p of this.#products) {
-      if (name == p.name) {
-        tmp=p;
+
+    this.#products.forEach(function(value,key,map){
+      if(key.name == name){
+        //console.log(key,value)
+        tmp = key;
       }
-    }
+    })
+
+    
     return tmp;
   }
 
