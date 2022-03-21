@@ -2,11 +2,15 @@
 import StoreHouse from "./StoreHouse.js";
 
 
+
+//import fs from "../node_modules/file-system/file-system.js";
+
 class StoreController{
   #storeView;
    #storeModel;
    #ventanas;
    #validate;
+   #userFavs;
   constructor(storeModel, storeView, validator) {
       if (StoreController.hasOwnProperty('singleton'))
           return StoreController.singleton;
@@ -21,6 +25,7 @@ class StoreController{
      this.#storeView = storeView;
      this.#validate = validator;
      this.#ventanas = [];
+     this.#userFavs = [];
  
      // Eventos iniciales del Controlador
      this.onInit();
@@ -41,18 +46,14 @@ class StoreController{
      this.#storeView.bindDeleteProduct(this.handleDeleteProduct)
 
      this.#storeView.bindLogin(this.handleLogin)
+     this.#storeView.bindLogout(this.handleLogout)
+     this.#storeView.bindFavs(this.handleFavs)
   }
 
    //Campos privados
    
    #loadStores(){
-       let nShop1 = new Store('11111','store1','adress1','111111111',new Coords(85345,9465467));
-       let nShop2 = new Store('22222','store2','adress2','22222222',new Coords(1234,743256));
-       let nShop3 = new Store('333333','store3','adress3','3333333',new Coords(1234,743256));
-       let nShop4 = new Store('t444444','store4','adress4','444444444',new Coords(134321,412342));
-       this.#storeModel.addShop(nShop1)
-       this.#storeModel.addShop(nShop3)
-       this.#storeModel.addShop(nShop2)
+      
        let c1 = new Category('cat 1','description 1');
        let c2 = new Category('cat 2','description 2');
        let c3 = new Category('cat 3','description 3');
@@ -63,24 +64,76 @@ class StoreController{
        this.#storeModel.addCategory(c3)
        this.#storeModel.addCategory(c4)
        
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p1.jpg'),nShop1,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p3.jpg'),nShop1,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p2.jpg'),nShop1,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p4.jpg'),nShop2,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p5.jpg'),nShop2,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p6.jpg'),nShop2,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p7.jpg'),nShop3,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p8.jpg'),nShop3,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p9.jpg'),nShop3,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p10.jpg'),nShop4,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p11.jpg'),nShop4,10)
-       this.#storeModel.addProductInShop(new Product('serial1','Product1', 'first added product',23,10,'p12.jpg'),nShop4,10)
-       this.#storeModel.addCategory(new Category("category 1", "first added category"))
-       this.#storeModel.addProduct(new Product('serial5','Product1', 'first added product',23,10,'p9.jpg'),new Category("category 2", "second added category"))
+       
+      
+      //  this.#storeModel.addCategory(new Category("category 1", "first added category"))
+      //  this.#storeModel.addProduct(new Product('serial5','Product1', 'first added product',23,10,'p9.jpg'),new Category("category 2", "second added category"))
        console.log('stores loaded');
+
+
+       var xhttp = new XMLHttpRequest();
+        
+       xhttp.onreadystatechange = function(){
+         console.dir(this);
+         if (this.readyState == 4 && this.status == 200) {
+           let controler = new StoreController();
+           console.dir(controler.f)
+           controler.loadS(this.response)
+         }
+       };
+       xhttp.open("GET", "stores.json",true);
+       xhttp.send();
+ 
+
+
+       var xhttp = new XMLHttpRequest();
+        
+      
+      xhttp.onreadystatechange = function(){
+        console.dir(this);
+        if (this.readyState == 4 && this.status == 200) {
+          let controler = new StoreController();
+          console.dir(controler.f)
+          controler.loadP(this.response)
+        }
+      };
+      xhttp.open("GET", "productos.json",true);
+      xhttp.send();
+
+
+      
+      
    }
  
   
+    loadP(respuesta){
+      console.dir(respuesta)
+    var respuesta = JSON.parse(respuesta);
+
+   
+   for(var i = 0; i < respuesta.length; i++) {
+    let prod =new Product(respuesta[i].serial, respuesta[i].name, respuesta[i].description, respuesta[i].price, respuesta[i].tax, respuesta[i].image)
+
+    this.#storeModel.addProductInShop(prod, this.#storeModel.getShopByCif(respuesta[i].storeCif),10)
+   }
+
+   }
+
+
+   loadS(respuesta){
+    console.dir(respuesta)
+  var respuesta = JSON.parse(respuesta);
+ for(var i = 0; i < respuesta.length; i++) {
+   console.log(respuesta[i])
+   let store =new Store(respuesta[i].CIF, respuesta[i].name, respuesta[i].adress, respuesta[i].phone, new Coords(respuesta[i].x, respuesta[i].y))
+
+    this.#storeModel.addShop(store)
+   
+
+ }
+
+ }
+
  
    onInit = () => {
      this.#storeView.init(this.#validate.validateLogin, this.handleInit);
@@ -92,6 +145,10 @@ class StoreController{
  
    onLoad = () => {
      this.#loadStores();
+   }
+
+   handleFavs = () =>{
+    console.log('favs');
    }
  
    handleAddProduct = ()  =>{
@@ -153,6 +210,12 @@ class StoreController{
      console.log('handle');
     this.#storeView.login(this.#validate.validateLogin);
    }
+
+   handleLogout = (event) =>{
+    console.log('logout');
+   this.#storeView.logout(this.onInit);
+  }
+
 
 
 

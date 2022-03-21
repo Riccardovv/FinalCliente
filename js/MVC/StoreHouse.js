@@ -163,8 +163,11 @@ class StoreHouse {
   getShopByCif(cif){
     let tmp;
     for (const s of this.#stores) {
-      if (s.CIf == cif) {
+      
+      if (s.CIF == cif) {
+        
         tmp=s
+        console.log(tmp)
       }
     }
     return tmp;

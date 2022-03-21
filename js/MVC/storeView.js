@@ -123,6 +123,7 @@ class StoreView{
                 <div class="card-body">
                 <h5 class="card-title">`+p.name+`</h5>
                 <p class="card-text">`+p.description+`</p>
+                <p class="card-text lead">`+p.price+`€</p>
                 <a href="#" class="btn btn-primary" data-name="${p.name}">Open New Window</a>
                 <a href="#" class="btn btn-warning" data-name="${p.name} id">Mark As Favorite</a>
                 </div>
@@ -564,6 +565,25 @@ deleteProduct(products,deleteFunc){
 
 
 
+
+
+
+  logout(inicio){
+    console.log('remove');
+    localStorage.removeItem('user')
+    $('#login').attr('data-user','')
+    $('#login').html('Log In')
+    inicio()
+
+  }
+
+
+  favs(products){
+    console.log('favs');
+  }
+
+
+
   closeWindows(ventanas){
     console.log('cerrar');
     ventanas.forEach(function (vent) {
@@ -572,11 +592,21 @@ deleteProduct(products,deleteFunc){
   }
 
 
+  bindFavs(handler){
+    $('#favs').click(handler)
+  }
+
   bindLogin(handler){
     
     $('#login').click(handler);
+    this.handle
   }
 
+
+  bindLogout(handler){
+    
+    $('#logout').click(handler);
+  }
 
   bindAddProduct(handler){
     
